@@ -1,0 +1,9 @@
+namespace Colourblind.Interfaces
+{
+    public interface ITriggerable
+    {
+        public bool isTriggered { get; set; }
+        public void Trigger();
+        public void UnTrigger();
+    }
+}

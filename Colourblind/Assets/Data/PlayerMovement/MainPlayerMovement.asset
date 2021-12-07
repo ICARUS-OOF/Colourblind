@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensitivity: 85
   moveSpeed: 4000
-  maxSpeed: 19
+  maxSpeed: 9
   maxY: 20
   whatIsGround:
     serializedVersion: 2
@@ -23,7 +23,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   counterMovement: 0.175
-  maxSlopeAngle: 35
+  maxSlopeAngle: 45
   slideForce: 400
   slideCounterMovement: 1
-  jumpForce: 285
+  jumpForce: 250

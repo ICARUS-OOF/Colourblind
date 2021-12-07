@@ -2,6 +2,7 @@ using Colourblind.Managers;
 using System;
 using Colourblind.Data;
 using UnityEngine;
+using Colourblind.Systems;
 
 namespace Colourblind.Movement
 {
@@ -13,12 +14,10 @@ namespace Colourblind.Movement
         [SerializeField] private Transform playerCam;
         [SerializeField] private Transform orientation;
         [SerializeField] private CameraOrientation camOri;
+        [SerializeField] private Player player;
 
         //Other
         [HideInInspector] public Rigidbody rb;
-
-        //DO NOT USE THIS BOOLEAN
-        public bool canMove;
 
         //Rotation and look
         private float xRotation;
@@ -60,7 +59,7 @@ namespace Colourblind.Movement
 
         private void FixedUpdate()
         {
-            if (canMove)
+            if (player.canMove)
             {
                 Movement();
             }
@@ -68,12 +67,12 @@ namespace Colourblind.Movement
 
         private void Update()
         {
-            if (canMove)
+            if (player.canMove)
             {
-                FindInputs();
-                Look();
                 CalculateFallDuration();
             }
+            FindInputs();
+            Look();
         }
 
         private void LateUpdate()
@@ -171,7 +170,7 @@ namespace Colourblind.Movement
             if (y < 0 && yMag < -maxSpeed) y = 0;
 
             //Some multipliers
-            float multiplier = 1f, multiplierV = 1f;
+            float multiplier = 1f, multiplierX = 1f;
 
             // Movement in air
             if (!grounded)
@@ -189,13 +188,13 @@ namespace Colourblind.Movement
                     multiplierX = 0.4f;
                 }
                 */
-                multiplier = 0.5f;
-                multiplierV = 0.5f;
+                multiplier = 0.05f;
+                multiplierX = .5f;
             }
 
             //Apply forces to move player
-            rb.AddForce(orientation.transform.forward * y * movementData.GetMoveSpeed() * TimeManager.GetFixedDeltaTime() * multiplier * multiplierV);
-            rb.AddForce(orientation.transform.right * x * movementData.GetMoveSpeed() * TimeManager.GetFixedDeltaTime() * multiplier * multiplierV);
+            rb.AddForce(orientation.transform.forward * y * movementData.GetMoveSpeed() * TimeManager.GetFixedDeltaTime() * multiplier);
+            rb.AddForce(orientation.transform.right * x * movementData.GetMoveSpeed() * TimeManager.GetFixedDeltaTime() * multiplier * multiplierX);
 
             //Fall Reduction
             if (rb.velocity.y < -movementData.GetMaxYSpeed())
@@ -242,9 +241,9 @@ namespace Colourblind.Movement
                 //If jumping while falling, reset y velocity.
                 Vector3 vel = rb.velocity;
                 if (rb.velocity.y < 0.5f)
-                    rb.velocity = new Vector3(vel.x / 3.8f, 0, vel.z / 3.8f);
+                    rb.velocity = new Vector3(vel.x / 2f, 0, vel.z / 2f);
                 else if (rb.velocity.y > 0)
-                    rb.velocity = new Vector3(vel.x / 3.8f, vel.y / 2, vel.z / 3.8f);
+                    rb.velocity = new Vector3(vel.x / 2f, vel.y / 2f, vel.z / 2f);
 
                 Invoke(nameof(ResetJump), jumpCooldown);
                 Invoke(nameof(ResetJumped), 4.5f);

@@ -62,14 +62,15 @@ Shader "Outlined/UltimateOutline"
 					//This way prevents weird artifacts from being created when using either of the methods
 					if (degrees(acos(dot(scaleDir.xyz, v.normal.xyz))) > _Angle) {
 						v.vertex.xyz += normalize(v.normal.xyz) * _FirstOutlineWidth;
+						v.vertex.xyz += scaleDir * _FirstOutlineWidth;
 					}
-	else {
-	   v.vertex.xyz += scaleDir * _FirstOutlineWidth;
-   }
+					else {
+						v.vertex.xyz += scaleDir * _FirstOutlineWidth;
+					}
 
-   v2f o;
-   o.pos = UnityObjectToClipPos(v.vertex);
-   return o;
+					v2f o;
+					o.pos = UnityObjectToClipPos(v.vertex);
+					return o;
 }
 
 half4 frag(v2f i) : COLOR{
