@@ -9,10 +9,10 @@ namespace Colourblind.Objects
         [SerializeField] private Vector3 turnDirection;
         [SerializeField] private bool damagePlayer = true;
 
-        private void Update()
+        private void FixedUpdate()
         {
             if (GetComponent<Rigidbody>() == null)
-                transform.Rotate(turnDirection * TimeManager.GetFixedDeltaTime());
+                transform.Rotate(turnDirection * TimeManager.GetFixedDeltaTime() * 4f);
         }
 
         private void LateUpdate()
@@ -25,7 +25,7 @@ namespace Colourblind.Objects
             Rigidbody rb = transform.AddComponent<Rigidbody>();
             rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
             rb.interpolation = RigidbodyInterpolation.Interpolate;
-            rb.mass = 3f;
+            rb.mass = 1f;
             transform.parent = null;
             AudioManager.PlayProfiledSoundEffect("Metal Fall", transform, .7f, .5f, pitch: 1f);
             CameraOrientation.Instance.Shake(Vector3.one * 2f);
@@ -40,19 +40,7 @@ namespace Colourblind.Objects
                 if (_rb.velocity.y < -3f)
                 {
                     int layer = collision.gameObject.layer;
-                    if (collision.transform.tag == "Player" && damagePlayer)
-                    {
-                        //Iterate through every collision in a physics update
-                        for (int i = 0; i < collision.contactCount; i++)
-                        {
-                            Vector3 normal = collision.contacts[i].normal;
-                            //FLOOR
-                            if (IsFloor(normal))
-                            {
-
-                            }
-                        }
-                    } else if (3 != (3 | (1 << layer)))
+                    if (3 != (3 | (1 << layer)) && collision.transform.tag != "Player")
                     {
                         //Iterate through every collision in a physics update
                         for (int i = 0; i < collision.contactCount; i++)

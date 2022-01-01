@@ -37,11 +37,11 @@ namespace Colourblind.Triggerables
             if (isTriggered)
             {
                 if (doorObject.position != targetPoint.position)
-                    doorObject.position = Vector3.Lerp(doorObject.position, targetPoint.position, TimeManager.GetFixedDeltaTime() * 6f);
+                    doorObject.position = Vector3.Lerp(doorObject.position, targetPoint.position, TimeManager.GetFixedDeltaTime() * 3f);
             } else
             {
                 if (doorObject.position != originalPoint.position)
-                    doorObject.position = Vector3.Lerp(doorObject.position, originalPoint.position, TimeManager.GetFixedDeltaTime() * 6f);
+                    doorObject.position = Vector3.Lerp(doorObject.position, originalPoint.position, TimeManager.GetFixedDeltaTime() * 3f);
             }
         }
     }

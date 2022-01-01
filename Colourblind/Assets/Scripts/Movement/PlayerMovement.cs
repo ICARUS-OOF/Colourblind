@@ -24,7 +24,7 @@ namespace Colourblind.Movement
         private float sensMultiplier = 1f;
 
         //Movement
-        [SerializeField] private bool grounded;
+        public bool grounded;
 
         private float threshold = 0.01f;
 
@@ -47,37 +47,89 @@ namespace Colourblind.Movement
         private Vector3 normalVector = Vector3.up;
         private Vector3 wallNormalVector;
 
+        [SerializeField] private AudioSource footstepAudioSource;
+        
+        public bool isLadder = false;
+
+        public static PlayerMovement Instance;
+
         private void Awake()
         {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+
             rb = GetComponent<Rigidbody>();
         }
 
         private void Start()
         {
             playerScale = transform.localScale;
+
+            rb.centerOfMass = Vector3.zero;
+            rb.inertiaTensorRotation = Quaternion.identity;
         }
 
         private void FixedUpdate()
         {
+            if (PlayerUI.Instance.isPaused)
+            { return; }
+
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(0f, 0f, 0f)), 2f * TimeManager.GetFixedDeltaTime());
             if (player.canMove)
             {
+                if (!isLadder)
+                {
+                    //Extra gravity
+                    rb.AddForce(Vector3.down * TimeManager.GetFixedDeltaTime() * 1000f);
+                }
                 Movement();
             }
         }
 
         private void Update()
         {
+            if (PlayerUI.Instance.isPaused)
+            { return; }
+
             if (player.canMove)
             {
                 CalculateFallDuration();
             }
             FindInputs();
-            Look();
+            if (player.canLook)
+                Look();
         }
 
         private void LateUpdate()
         {
+            if (PlayerUI.Instance.isPaused)
+            { return; }
 
+            CalculateAudioFeedback();
+        }
+        
+        private void CalculateAudioFeedback()
+        {
+            if (rb.velocity.magnitude >= 2f && grounded)
+            {
+                footstepAudioSource.volume = Mathf.Lerp(footstepAudioSource.volume, 0.035f, TimeManager.GetFixedDeltaTime() * 5f);
+            }
+            else if (rb.velocity.magnitude < 2f || !grounded)
+            {
+                footstepAudioSource.volume = Mathf.Lerp(footstepAudioSource.volume, 0f, TimeManager.GetFixedDeltaTime() * 5f);
+            }
+            /*
+            if (!grounded && rb.velocity.magnitude > 5f)
+            {
+                fallingAudioSource.volume = Mathf.Lerp(fallingAudioSource.volume, 0.035f, TimeManager.GetFixedDeltaTime() * .14f);
+            }
+            else
+            {
+                fallingAudioSource.volume = Mathf.Lerp(fallingAudioSource.volume, 0f, TimeManager.GetFixedDeltaTime() * 1.1f);
+            }
+            */
         }
 
         /// <summary>
@@ -103,6 +155,21 @@ namespace Colourblind.Movement
         public void AddForce(Vector3 force)
         {
             rb.AddForce(force, ForceMode.Impulse);
+        }
+        
+        public void AddForceX(float force)
+        {
+            rb.AddForce(new Vector3(force, 0f, 0f), ForceMode.Impulse);
+        }
+        
+        public void AddForceY(float force)
+        {
+            rb.AddForce(new Vector3(0f, force, 0f), ForceMode.Impulse);
+        }
+        
+        public void AddForceZ(float force)
+        {
+            rb.AddForce(new Vector3(0f, 0f, force), ForceMode.Impulse);
         }
 
         public void AddForceAtPosition(Vector3 force, Vector3 pos)
@@ -147,8 +214,19 @@ namespace Colourblind.Movement
 
         private void Movement()
         {
-            //Extra gravity
-            rb.AddForce(Vector3.down * TimeManager.GetFixedDeltaTime() * 1000f);
+            if (isLadder)
+            {
+                if (Input.GetKey(KeyCode.Space))
+                {
+                    rb.velocity = new Vector3(rb.velocity.x, 10f, rb.velocity.z);
+                } else if (Input.GetKey(KeyCode.LeftControl))
+                {
+                    rb.velocity = new Vector3(rb.velocity.x, -10f, rb.velocity.z);
+                } else
+                {
+                    rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+                }
+            }
 
             //Find actual velocity relative to where player is looking
             Vector2 mag = FindVelRelativeToLook();
@@ -158,7 +236,7 @@ namespace Colourblind.Movement
             CounterMovement(x, y, mag);
 
             //If holding jump && ready to jump, then jump
-            if (readyToJump && jumping) Jump();
+            if (readyToJump && jumping && !isLadder) Jump();
 
             //Set max speed
             float maxSpeed = movementData.GetMoveSpeed();
@@ -188,8 +266,16 @@ namespace Colourblind.Movement
                     multiplierX = 0.4f;
                 }
                 */
-                multiplier = 0.05f;
-                multiplierX = .5f;
+                if (isLadder)
+                {
+                    multiplier = .5f;
+                    multiplierX = .5f;
+
+                } else
+                {
+                    multiplier = 0.13f;
+                    multiplierX = .2f;
+                }
             }
 
             //Apply forces to move player
@@ -241,9 +327,9 @@ namespace Colourblind.Movement
                 //If jumping while falling, reset y velocity.
                 Vector3 vel = rb.velocity;
                 if (rb.velocity.y < 0.5f)
-                    rb.velocity = new Vector3(vel.x / 2f, 0, vel.z / 2f);
+                    rb.velocity = new Vector3(vel.x / 3f, 0, vel.z / 3f);
                 else if (rb.velocity.y > 0)
-                    rb.velocity = new Vector3(vel.x / 2f, vel.y / 2f, vel.z / 2f);
+                    rb.velocity = new Vector3(vel.x / 3f, vel.y / 2f, vel.z / 3f);
 
                 Invoke(nameof(ResetJump), jumpCooldown);
                 Invoke(nameof(ResetJumped), 4.5f);
@@ -263,8 +349,8 @@ namespace Colourblind.Movement
         private float desiredX;
         private void Look()
         {
-            float mouseX = Input.GetAxis("Mouse X") * movementData.GetSensitivity() * TimeManager.GetFixedDeltaTime() * sensMultiplier;
-            float mouseY = Input.GetAxis("Mouse Y") * movementData.GetSensitivity() * TimeManager.GetFixedDeltaTime() * sensMultiplier;
+            float mouseX = Input.GetAxis("Mouse X") * movementData.GetSensitivity() * TimeManager.GetFixedDeltaTime() * sensMultiplier * GameManager.Instance.currentSettingsData.sens;
+            float mouseY = Input.GetAxis("Mouse Y") * movementData.GetSensitivity() * TimeManager.GetFixedDeltaTime() * sensMultiplier * GameManager.Instance.currentSettingsData.sens;
 
             //Find current look rotation
             Vector3 rot = playerCam.transform.localRotation.eulerAngles;
@@ -302,7 +388,7 @@ namespace Colourblind.Movement
 
         private void CounterMovement(float x, float y, Vector2 mag)
         {
-            if (!grounded || jumping) return;
+            if (!grounded || jumping || isLadder) return;
 
             //Slow down sliding
             if (crouching)

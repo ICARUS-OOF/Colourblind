@@ -26,6 +26,11 @@ namespace Colourblind.Triggerables
             if (maxTriggers <= currentTriggers)
             { return; }
 
+            if (currentTriggers > maxTriggers)
+            {
+                currentTriggers = maxTriggers;
+            }
+
             currentTriggers++;
 
             for (int i = 0; i < triggerables.Length; i++)

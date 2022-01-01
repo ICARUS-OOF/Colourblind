@@ -51,7 +51,7 @@ AudioSource:
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 0
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
@@ -197,6 +197,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   heldCubes:
   - {fileID: 1002507147584573137, guid: da48c8c6abf475446ba0ae8323632499, type: 3}
+  - {fileID: 1002507147584573137, guid: b8a02d08c29bc7d45a9531bedac1c8c7, type: 3}
+  - {fileID: 1002507147584573137, guid: e9be2afd382a5b64ea75491a2d79de1a, type: 3}
+  - {fileID: 1002507147584573137, guid: ebcd7c7d5e52a004c9e7886ee156b61e, type: 3}
+  - {fileID: 1002507147584573137, guid: b9198564dd0dc1a44bfa6234937c2687, type: 3}
+  - {fileID: 1002507147584573137, guid: 2db48f1a61ae79247850c14713a8cc4c, type: 3}
+  interactableCubes:
+  - {fileID: 7478588184120497225, guid: e010946b64013b0478adc95402377519, type: 3}
+  - {fileID: 360734955798683425, guid: 9dd6d7fd7615c4044befbfbf746c509c, type: 3}
+  - {fileID: 4677929249365831441, guid: 1c08d7fd0058aac47be5833ea303f84e, type: 3}
+  - {fileID: 2874581034950920749, guid: 6f81fde489aade94086dffb7f2bc40f8, type: 3}
+  - {fileID: 683580978535551544, guid: 19876761560d5f34b8a8a5b8dde6f278, type: 3}
+  - {fileID: 4677929249365831441, guid: a5bcace325b5ad74883399a871d1d953, type: 3}
+  currentSaveData:
+    currentScene: 
+    saveDate: 
+  currentSettingsData:
+    gfx: 0.8
+    sens: 1
+    masterVol: 1
+    musicVol: 1
 --- !u!1 &6550704751845152635
 GameObject:
   m_ObjectHideFlags: 0
@@ -254,6 +274,15 @@ MonoBehaviour:
     volume: 0.7
   - ID: Activated 2
     clip: {fileID: 8300000, guid: 866cd0bdd1b780949b8882e4be073bed, type: 3}
+    volume: 0.7
+  - ID: Kapow
+    clip: {fileID: 8300000, guid: 4e403cf50232551448950f0f5869d12f, type: 3}
+    volume: 0.7
+  - ID: Sheesh
+    clip: {fileID: 8300000, guid: 93408ec8f837d3d44b11790b4fae9636, type: 3}
+    volume: 0.7
+  - ID: Beep
+    clip: {fileID: 8300000, guid: 8f84e6c40a52a4847922d5a1d74f720d, type: 3}
     volume: 0.7
 --- !u!82 &6550704751845152636
 AudioSource:

@@ -11,7 +11,7 @@ namespace Colourblind.Movement
 
         public MovingCogwheel[] movingCogwheels;
         public GameObject[] objsToDestroy, objsToDestroy2;
-        public Rigidbody[] rbToEnable;
+        public GameObject[] rbToEnable;
         public Transform[] explosionPoints;
         public GameObject cogwheelSmokeParticles;
 
@@ -39,8 +39,10 @@ namespace Colourblind.Movement
         private int rbIndex;
         public void EnableRB()
         {
-            rbToEnable[rbIndex].isKinematic = false;
-            rbToEnable[rbIndex].useGravity = true;
+            Rigidbody rb = rbToEnable[rbIndex].AddComponent<Rigidbody>();
+            rb.isKinematic = false;
+            rb.useGravity = true;
+            rb.transform.parent = null;
             rbIndex++;
         }
 

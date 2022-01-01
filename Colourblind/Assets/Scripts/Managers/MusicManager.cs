@@ -80,7 +80,7 @@ namespace Colourblind.Managers
         {
             if (!musicSource.isPlaying)
             {
-                musicSource.Play();
+                musicSource.UnPause();
             }
         }
 

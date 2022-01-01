@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.ProBuilder;
 
 namespace Colourblind.Systems
 {
@@ -14,6 +15,12 @@ namespace Colourblind.Systems
             cam = Camera.main;
 
             meshFilter = GetComponent<MeshFilter>();
+
+            if (LOD0 == null)
+            {
+                if (meshFilter != null)
+                    LOD0 = meshFilter.mesh;
+            }
 
             InvokeRepeating(nameof(UpdateMesh), 0f, .3f);
         }
